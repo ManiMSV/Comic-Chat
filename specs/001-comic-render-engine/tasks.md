@@ -42,7 +42,7 @@ description: "Task list for Comic Render Engine feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 Create all typed Pydantic schemas in `backend/app/schemas/comic.py`: `Character`, `Palette` (primary/secondary/accent), `CharacterPlacement` (character_id, side), `ComicMessage` (speaker_id, text), `RenderedMessage` (id uuid, speaker_id, text, expression, balloon), `Panel` (characters, messages), `ComicInstruction` (characters, panels), `ComicRequest` (messages), `ComicResponse` (comic), `DemoDialogue` (id, name, messages), `DemosResponse` (demos); enums `Expression` (neutral/joy/anger/surprise/sadness), `BalloonShape` (speech/shout/thought), `Side` (left/right)
+- [ ] T004 Create all typed Pydantic schemas in `backend/app/schemas/comic.py`: `Character`, `Palette` (primary/secondary/accent), `CharacterPlacement` (character_id, side), `ComicMessage` (speaker_id, text), `RenderedMessage` (id with deterministic hash, speaker_id, text, expression, balloon), `Panel` (characters, messages), `ComicInstruction` (characters, panels), `ComicRequest` (messages), `ComicResponse` (comic), `DemoDialogue` (id, name, messages), `DemosResponse` (demos); enums `Expression` (neutral/joy/anger/surprise/sadness), `BalloonShape` (speech/shout/thought), `Side` (left/right)
 - [ ] T005 Create `backend/app/services/characters.py`: three fixed, procedurally defined `Character` constants (id, name, distinct palette hex, silhouette description: circle/square/triangle) covering the v1 cast from data-model.md and research.md §7
 - [ ] T006 Create `backend/app/services/composer.py` skeleton: a pure `compose(messages: list[ComicMessage]) -> ComicInstruction` that references `analyzer`/`layout`/`characters` and assembles the typed result (empty bodies for the referenced modules may raise initially); keep it free of DB/HTTP imports per constitution principle II
 
@@ -59,14 +59,14 @@ description: "Task list for Comic Render Engine feature implementation"
 ### Tests for User Story 1 ⚠️ (write first, verify they FAIL before implementation)
 
 - [ ] T007 [P] [US1] Unit test shouting + speech balloon + placement in `backend/tests/unit/test_analyzer.py` (pure functions): ≥50% uppercase & ≥3 alphabetic → `shout`, else `speech`
-- [ ] T008 [P] [US1] Unit test panel layout in `backend/tests/unit/test_layout.py`: max 4 messages per panel, split at a character-turn boundary where possible, left/right placement by turn parity + speaker identity with stable side across panels
-- [ ] T009 [P] [US1] API test for the render and demos endpoints in `backend/tests/api/routes/test_comic.py`: `POST /comic/render` happy path returns typed instruction, `GET /comic/demos` returns three demo dialogues, plus `422` cases (empty messages, empty/whitespace text, unknown speaker_id, overlong text)
+- [ ] T008 [P] [US1] Unit test panel layout in `backend/tests/unit/test_layout.py`: max 4 messages per panel; split by scanning right-to-left from message 4 for the latest speaker-change position ≤4 (split there if found, else cap at 4); left/right placement by turn parity + speaker identity with stable side across panels
+- [ ] T009 [P] [US1] API test for the render and demos endpoints in `backend/tests/api/routes/test_comic.py`: `POST /comic/render` happy path returns typed instruction, `GET /comic/demos` returns three demo dialogues, plus `422` cases (empty messages, empty/whitespace text, unknown speaker_id, overlong text); include a determinism assertion — render the same request twice and assert the two `ComicResponse` bodies are byte-identical (validates SC-002 and the deterministic message `id`)
 
 ### Implementation for User Story 1
 
 - [ ] T010 [P] [US1] Implement `backend/app/services/analyzer.py`: pure function for balloon shape (`speech` vs `shout` by shouting rule) — emotion/thought refinement deferred to US2/US3
-- [ ] T011 [P] [US1] Implement `backend/app/services/layout.py`: pure function splitting messages into panels (capacity 4, turn-change boundary) and assigning stable left/right placement via turn parity + speaker identity (FR-005/FR-006/FR-007)
-- [ ] T012 [P] [US1] Create `backend/app/services/demos.py`: three ready-made demo dialogues (surprise, disagreement, quiet/tension) covering shout, speech, and thought balloon intent, each with stable id/name and message bodies (FR-011)
+- [ ] T011 [P] [US1] Implement `backend/app/services/layout.py`: pure function splitting messages into panels (capacity 4, split at the latest right-to-left speaker-change position ≤4 else cap at 4) and assigning stable left/right placement via turn parity + speaker identity (FR-005/FR-006/FR-007)
+- [ ] T012 [P] [US1] Create `backend/app/services/demos.py`: three ready-made demo dialogues (surprise, disagreement, quiet/tension) covering shout and speech balloons only, each with stable id/name and message bodies (FR-011). The thought-marked message for the quiet/tension demo is added in T024 (US3) so no demo references un-implemented thought behavior
 - [ ] T013 [US1] Complete `backend/app/services/composer.py`: orchestrate analyzer + layout + characters into the typed `ComicInstruction`, keeping every decision a pure function (depends on T010, T011, T012, T004, T005)
 - [ ] T014 [US1] Implement `backend/app/api/routes/comic.py`: `POST /comic/render` (stateless, returns `ComicResponse`) and `GET /comic/demos` (returns `DemosResponse`), both behind the existing auth; register the router in `backend/app/api/main.py`
 - [ ] T015 [US1] Regenerate the frontend OpenAPI client after the backend schema change via `bash ./scripts/generate-client.sh`; commit the regenerated `frontend/src/client/` (never hand-edit)
@@ -89,12 +89,12 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 
 ### Tests for User Story 2 ⚠️ (write first, verify they FAIL before implementation)
 
-- [ ] T019 [P] [US2] Extend `backend/tests/unit/test_analyzer.py` with emotion tests: joy/anger/surprise/sadness from keyword/stemset matches, `neutral` when no signal, and FR-010 precedence resolution (anger > surprise > joy > sadness > neutral) for conflicting signals
+- [ ] T019 [P] [US2] Extend `backend/tests/unit/test_analyzer.py` with emotion tests pinned to the exact word sets in research.md §1, matched by whole-word boundary (e.g. `yay` → `joy`, `yesterday` → `neutral`, `hate` → `anger`), `neutral` fallback when no signal, and FR-010 precedence resolution (anger > surprise > joy > sadness > neutral) for conflicting signals
 - [ ] T020 [P] [US2] Extend `backend/tests/api/routes/test_comic.py` to assert rendered `expression` values flow through `POST /comic/render` for the emotion-triggering messages
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Extend `backend/app/services/analyzer.py`: add deterministic emotion detection (curated keyword/stemset scan) and FR-010 precedence resolution so a message resolves to exactly one `Expression` (FR-003/FR-010; depends on T019)
+- [ ] T021 [US2] Extend `backend/app/services/analyzer.py`: add deterministic emotion detection using whole-word boundary matching against the exact word sets in research.md §1, and FR-010 precedence resolution so a message resolves to exactly one `Expression` (FR-003/FR-010; depends on T019)
 - [ ] T022 [US2] Wire `expression` through `backend/app/services/composer.py` and the `RenderedMessage` payload in `backend/app/api/routes/comic.py` so the response carries each message's resolved expression (depends on T021)
 
 **Checkpoint**: User Stories 1 AND 2 both work and remain independently testable.
@@ -109,11 +109,11 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 
 ### Tests for User Story 3 ⚠️ (write first, verify they FAIL before implementation)
 
-- [ ] T023 [P] [US3] Extend `backend/tests/unit/test_analyzer.py` with thought detection: leading `[thought]` marker (after trim) → `thought`; a `[thought]` ALL-CAPS message stays `thought` (thought overrides shout); normal message → `speech`
+- [ ] T023 [P] [US3] Extend `backend/tests/unit/test_analyzer.py` with thought detection: leading `[thought]` marker (after trim, case-insensitive) → `thought`; a `[thought]` ALL-CAPS message stays `thought` (thought overrides shout); normal message → `speech`
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Extend `backend/app/services/analyzer.py` balloon rule to the full documented precedence: `shout` if shouting, else `thought` if `[thought]`-marked, else `speech` (FR-004; depends on T023)
+- [ ] T024 [US3] Extend `backend/app/services/analyzer.py` balloon rule to the full documented precedence: `shout` if shouting, else `thought` if `[thought]`-marked (case-insensitive), else `speech`; add the `[thought]` message to the quiet/tension demo in `backend/app/services/demos.py` (FR-004; depends on T023)
 - [ ] T025 [P] [US3] Extend `frontend/src/components/Comic/Balloon.tsx` to render a cloud-shaped `thought` balloon with a connector tail pointing at the speaker, distinct from the speech shape
 
 **Checkpoint**: All user stories independently functional.

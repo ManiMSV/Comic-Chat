@@ -10,14 +10,26 @@ Context. Each entry records the Decision, its Rationale, and the Alternatives co
 ### 1. Emotion model and expression mapping (FR-003, FR-010, US2)
 
 **Decision**: A fixed set of **five emotions** — `joy`, `anger`, `surprise`, `sadness`, `neutral`.
-Each supported emotion maps to a curated keyword/stemset. A message's emotion is the resolved
-result of scanning the stemsets. Conflicting emotion signals resolve by a **fixed, documented
-precedence**: `anger > surprise > joy > sadness > neutral` (FR-010). Output is fully deterministic.
+Each supported emotion maps to a **fixed, enumerated word set**. Matching uses **whole-word
+boundary** comparison on lowercased text — a stem matches only as a complete lowercase word, never
+as a substring (so `yay` does not fire inside `yesterday`). The v1 word sets are:
+
+- `joy` = `{yay, happy, love, great, awesome}`
+- `anger` = `{hate, angry, mad, no}`
+- `surprise` = `{wow, what, oh, whoa}`
+- `sadness` = `{sad, sorry, miss}`
+
+A message's emotion is the resolved result of scanning the word sets. If none match, emotion is
+`neutral` (the fallback, not a matched set). Conflicting emotion signals resolve by a **fixed,
+documented precedence**: `anger > surprise > joy > sadness > neutral` (FR-010). Output is fully
+deterministic. The stem/word sets above are the **authoritative definition** — unit tests and
+analyzer must both be pinned to this exact list (SC-004).
 
 **Rationale**:
 - Satisfies constitution principle II (pure function, no LLM, no randomness).
 - Small, explicit vocab means each emotion is independently unit-testable (SC-004, US2 scenarios).
-- Curated stemsets give predictable behavior on demo dialogues.
+- Whole-word matching removes false-positive substring matches, keeping determinism predictable.
+- Curated word sets give predictable behavior on demo dialogues.
 
 **Alternatives considered**:
 - Machine-learning / LLM sentiment analysis — rejected: nondeterministic, breaks principle II.

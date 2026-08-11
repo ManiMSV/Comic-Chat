@@ -108,7 +108,7 @@ BalloonShape   = "speech"  | "shout" | "thought"
 Side           = "left"    | "right"
 
 CharacterPlacement { character_id: str, side: Side }
-RenderedMessage    { id: uuid, speaker_id: str, text: str, expression: Expression, balloon: BalloonShape }
+RenderedMessage    { id: deterministic_hash, speaker_id: str, text: str, expression: Expression, balloon: BalloonShape }
 Panel              { characters: list[CharacterPlacement], messages: list[RenderedMessage] }
 Character          { id: str, name: str, palette: Palette, silhouette: str }
 Palette            { primary: str, secondary: str, accent: str }
@@ -122,8 +122,9 @@ DemosResponse      { demos: list[DemoDialogue] }
 ```
 
 Derivation rules (pure, documented in the data model):
+- Deterministic id: `RenderedMessage.id` = hash of speaker_id + text + index; same input → same id (SC-002).
 - Shouting: ≥50% alphabetic uppercase AND ≥3 alphabetic chars → `shout`.
-- Thought: leading `[thought]` → `thought`.
-- Emotion precedence: `anger > surprise > joy > sadness > neutral`.
+- Thought: leading `[thought]` (case-insensitive) → `thought`.
+- Emotion: whole-word boundary match against word sets in research.md §1; precedence `anger > surprise > joy > sadness > neutral`.
 - Placement: turn parity + speaker identity; side stable across panels.
-- Panels: max 4 messages, split at a character-turn boundary where possible.
+- Panels: max 4 messages; split at latest right-to-left speaker-change position ≤4, else cap at 4.

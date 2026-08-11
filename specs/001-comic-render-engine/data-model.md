@@ -42,13 +42,17 @@ A single line spoken by one character. The unit of input to the render.
 | `speaker_id` | `str` | Must reference a known char in the v1 cast. |
 | `text` | `str` | Max 500 chars; trimmed. Empty (after trim) is invalid. |
 
-**Derived fields** (pure functions of `text`, not part of the request):
+**Derived fields** (pure functions of the request, not part of it):
+- `id: uuid` — **deterministic** hash of the message (`speaker_id` + `text` + index in the
+  conversation). Same input always yields the same id, so SC-002 ("identical output on re-render")
+  is trivially byte-verifiable. `Panel.message_refs` reuse these same deterministic ids (FR-003,
+  principle II).
 - `expression: Expression` — `neutral` \| `joy` \| `anger` \| `surprise` \| `sadness`, resolved
-  by keyword stemscan with precedence `anger > surprise > joy > sadness > neutral` (FR-003,
-  FR-010).
+  by **whole-word boundary** matching against the fixed word sets enumerated in research.md §1,
+  with precedence `anger > surprise > joy > sadness > neutral` (FR-003, FR-010).
 - `balloon: BalloonShape` — `speech` \| `shout` \| `thought` (FR-004):
   - `shout` if ≥50% of alphabetic chars are uppercase and length ≥3.
-  - else `thought` if text starts with `[thought]`.
+  - else `thought` if trimmed text starts with `[thought]` case-insensitively.
   - else `speech`.
 
 **Relationships**: A `Message` belongs to exactly one speaker; several messages form a `Panel`.
