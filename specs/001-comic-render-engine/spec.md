@@ -67,11 +67,13 @@ bubble) instead of a speech balloon, distinguishing internal commentary from spo
 range, but are a refinement over the core speech and shout balloons.
 
 **Independent Test**: Fully testable by submitting a message marked as a thought and confirming
-it renders with a thought-balloon shape distinct from speech and shout balloons.
+it renders with a thought-balloon shape distinct from speech and shout balloons. A thought is
+marked by prefixing the message with the `[thought]` tag (case-insensitive, e.g. `[thought]`,
+`[Thought]`), which is stripped from the displayed text.
 
 **Acceptance Scenarios**:
 
-1. **Given** a message marked as a thought, **When** rendered, **Then** it uses a cloud-shaped
+1. **Given** a message prefixed `[thought]`, **When** rendered, **Then** it uses a cloud-shaped
    thought balloon with a connector tail pointing at the speaker.
 2. **Given** a normal spoken message, **When** rendered, **Then** it uses a speech balloon and not
    a thought balloon.
