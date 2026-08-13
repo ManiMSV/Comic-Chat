@@ -5,7 +5,14 @@ import re
 import pytest
 
 from app.schemas.comic import Character
-from app.services.characters import ADA, BOB, CARA, CHARACTER_IDS, CHARACTERS, get_character
+from app.services.characters import (
+    ADA,
+    BOB,
+    CARA,
+    CHARACTER_IDS,
+    CHARACTERS,
+    get_character,
+)
 
 HEX_COLOR_RE = re.compile(r"^#[0-9a-f]{6}$")
 
@@ -45,7 +52,11 @@ def test_palettes_are_valid_lowercase_hex() -> None:
 
 def test_palettes_are_pairwise_distinct() -> None:
     palettes = [
-        (character.palette.primary, character.palette.secondary, character.palette.accent)
+        (
+            character.palette.primary,
+            character.palette.secondary,
+            character.palette.accent,
+        )
         for character in CHARACTERS
     ]
     assert len(set(palettes)) == len(palettes)

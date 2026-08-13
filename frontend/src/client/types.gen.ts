@@ -5,6 +5,11 @@ export type ClientOptions = {
 };
 
 /**
+ * BalloonShape
+ */
+export type BalloonShape = 'speech' | 'shout' | 'thought';
+
+/**
  * Body_login-login_access_token
  */
 export type Body_login_login_access_token = {
@@ -33,6 +38,114 @@ export type Body_login_login_access_token = {
      */
     client_secret?: string | null;
 };
+
+/**
+ * Character
+ */
+export type Character = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    palette: Palette;
+    /**
+     * Silhouette
+     */
+    silhouette: string;
+};
+
+/**
+ * CharacterPlacement
+ */
+export type CharacterPlacement = {
+    /**
+     * Character Id
+     */
+    character_id: string;
+    side: Side;
+};
+
+/**
+ * ComicInstruction
+ */
+export type ComicInstruction = {
+    /**
+     * Characters
+     */
+    characters: Array<Character>;
+    /**
+     * Panels
+     */
+    panels: Array<Panel>;
+};
+
+/**
+ * ComicMessage
+ */
+export type ComicMessage = {
+    /**
+     * Speaker Id
+     */
+    speaker_id: string;
+    /**
+     * Text
+     */
+    text: string;
+};
+
+/**
+ * ComicRequest
+ */
+export type ComicRequest = {
+    /**
+     * Messages
+     */
+    messages: Array<ComicMessage>;
+};
+
+/**
+ * ComicResponse
+ */
+export type ComicResponse = {
+    comic: ComicInstruction;
+};
+
+/**
+ * DemoDialogue
+ */
+export type DemoDialogue = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Messages
+     */
+    messages: Array<ComicMessage>;
+};
+
+/**
+ * DemosResponse
+ */
+export type DemosResponse = {
+    /**
+     * Demos
+     */
+    demos: Array<DemoDialogue>;
+};
+
+/**
+ * Expression
+ */
+export type Expression = 'neutral' | 'joy' | 'anger' | 'surprise' | 'sadness';
 
 /**
  * HTTPValidationError
@@ -69,6 +182,38 @@ export type NewPassword = {
 };
 
 /**
+ * Palette
+ */
+export type Palette = {
+    /**
+     * Primary
+     */
+    primary: string;
+    /**
+     * Secondary
+     */
+    secondary: string;
+    /**
+     * Accent
+     */
+    accent: string;
+};
+
+/**
+ * Panel
+ */
+export type Panel = {
+    /**
+     * Characters
+     */
+    characters: Array<CharacterPlacement>;
+    /**
+     * Messages
+     */
+    messages: Array<RenderedMessage>;
+};
+
+/**
  * PrivateUserCreate
  */
 export type PrivateUserCreate = {
@@ -89,6 +234,31 @@ export type PrivateUserCreate = {
      */
     is_verified?: boolean;
 };
+
+/**
+ * RenderedMessage
+ */
+export type RenderedMessage = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Speaker Id
+     */
+    speaker_id: string;
+    /**
+     * Text
+     */
+    text: string;
+    expression: Expression;
+    balloon: BalloonShape;
+};
+
+/**
+ * Side
+ */
+export type Side = 'left' | 'right';
 
 /**
  * Token
@@ -703,6 +873,47 @@ export type utilsHealthCheckResponses = {
 };
 
 export type utilsHealthCheckResponse = utilsHealthCheckResponses[keyof utilsHealthCheckResponses];
+
+export type comicRenderComicData = {
+    body: ComicRequest;
+    path?: never;
+    query?: never;
+    url: '/api/v1/comic/render';
+};
+
+export type comicRenderComicErrors = {
+    /**
+     * Validation Error
+     */
+    422: HTTPValidationError;
+};
+
+export type comicRenderComicError = comicRenderComicErrors[keyof comicRenderComicErrors];
+
+export type comicRenderComicResponses = {
+    /**
+     * Successful Response
+     */
+    200: ComicResponse;
+};
+
+export type comicRenderComicResponse = comicRenderComicResponses[keyof comicRenderComicResponses];
+
+export type comicListDemosData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/comic/demos';
+};
+
+export type comicListDemosResponses = {
+    /**
+     * Successful Response
+     */
+    200: DemosResponse;
+};
+
+export type comicListDemosResponse = comicListDemosResponses[keyof comicListDemosResponses];
 
 export type privateCreateUserData = {
     body: PrivateUserCreate;
