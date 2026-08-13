@@ -30,7 +30,7 @@ description: "Task list for Comic Render Engine feature implementation"
 
 **Purpose**: Prepare the repository and remove the scaffold demo that the new feature replaces.
 
-- [ ] T001 Delete the Items CRUD demo: remove `Item`/`ItemBase`/`ItemCreate`/`ItemUpdate`/`ItemPublic`/`ItemsPublic` from `backend/app/models.py`, delete `backend/app/api/routes/items.py`, remove items router registration from `backend/app/api/main.py`, delete `frontend/src/components/Items/*`, `frontend/src/routes/_layout/items.tsx`, and `frontend/tests/items.spec.ts`; also remove the Items nav entry (`{ icon: Briefcase, title: "Items", path: "/items" }` plus the now-unused `Briefcase` import) from `frontend/src/components/Sidebar/AppSidebar.tsx` (CHK015)
+- [X] T001 Delete the Items CRUD demo: remove `Item`/`ItemBase`/`ItemCreate`/`ItemUpdate`/`ItemPublic`/`ItemsPublic` from `backend/app/models.py`, delete `backend/app/api/routes/items.py`, remove items router registration from `backend/app/api/main.py`, delete `frontend/src/components/Items/*`, `frontend/src/routes/_layout/items.tsx`, and `frontend/tests/items.spec.ts`; also remove the Items nav entry (`{ icon: Briefcase, title: "Items", path: "/items" }` plus the now-unused `Briefcase` import) from `frontend/src/components/Sidebar/AppSidebar.tsx` (CHK015)
 - [ ] T002 Create the expert-engine package structure: add `backend/app/services/__init__.py` and the empty module files `backend/app/services/analyzer.py`, `layout.py`, `characters.py`, `demos.py`, `composer.py`
 - [ ] T003 [P] Confirm the working dev environment: run `uv sync` from `backend/` and `bun install` from repo root; verify `uv run fastapi dev` boots and `bun run dev` compiles the scaffold
 
