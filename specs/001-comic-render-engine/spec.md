@@ -146,6 +146,8 @@ marked by prefixing the message with the `[thought]` tag (case-insensitive, e.g.
   database. Persistence and real-time multi-user chat are explicitly out of scope for this
   feature.
 - Rendering uses vector graphics (SVG) so the comic scales cleanly at any zoom.
+- The rendered comic is accessible: balloon text stays real, selectable text (not flattened
+  paths), and each panel is identifiable to assistive technology via an accessible name.
 - The v1 cast is three procedurally generated, stylized characters with distinct silhouettes and
   color palettes. The visual style is clean and geometric.
 - Three ready-made demo dialogues are provided by default, covering surprise, a disagreement, and

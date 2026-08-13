@@ -108,6 +108,8 @@ frontend/
 │   ├── routes/_layout/
 │   │   ├── index.tsx             # dashboard -> update title/welcome copy (Items removed)
 │   │   └── comic.tsx             # NEW: demo picker + message editor -> SVG preview
+│   ├── components/Sidebar/
+│   │   └── AppSidebar.tsx        # remove the Items nav entry ({ Briefcase, "Items", "/items" })
 │   ├── components/Comic/
 │   │   ├── ComicStrip.tsx        # NEW: renders ComicInstruction to <svg>
 │   │   ├── Panel.tsx
@@ -125,6 +127,23 @@ frontend/
 engine is kept **pure** (`services/` with no DB/HTTP imports) so it is trivially unit-testable —
 this directly satisfies constitution principle II. Removal of the Items demo keeps the repository
 aligned with the spec assumption "demo Items CRUD example is removed."
+
+## Frontend UX & Accessibility (CHK022, CHK030)
+
+The Comic page (`comic.tsx`) must define and render these states (FR-008):
+
+- **Loading**: skeleton/spinner while fetching `GET /comic/demos` and while a render is in flight.
+- **Empty**: before any render, a prompt to pick a demo or type messages (no comic shown).
+- **Error**: a clear message when the demos fetch fails, when `POST /comic/render` returns 4xx/5xx
+  (including the documented 422 cases), and a retry path.
+
+The comic `<svg>` is accessible (CHK030):
+
+- Balloon text is rendered as real `<text>` elements (selectable, not flattened paths).
+- Each panel `<g>` carries an accessible name — `aria-label` or a `<title>` — that identifies the
+  panel and its speakers (e.g. "Panel 1: Ada and Bob").
+- Characters and balloons are drawn with sufficient contrast against the panel background using
+  the palette colors from the `Character.palette`.
 
 ## Complexity Tracking
 
