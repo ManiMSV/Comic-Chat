@@ -43,6 +43,14 @@ analyzer must both be pinned to this exact list (SC-004).
 AND the message contains at least 3 alphabetic characters**. Balloon must still wrap text within
 the panel regardless of length.
 
+**Definition of "alphabetic character"**: an alphabetic character is any character for which
+Python's `str.isalpha()` returns `True` (i.e. any Unicode letter, ASCII or non-ASCII — `é`, `Ω`,
+`漢` all count). Digits, whitespace, punctuation, and symbols are NOT alphabetic and are ignored
+when computing the uppercase ratio. A message with **zero** alphabetic characters is never a
+`shout` (the ≥3-alphabetic clause fails). Example: `"AWESOME!! 😃"` → 7 alphabetic chars, all
+uppercase → `shout`; `"¡HOLA!"` → 4 alphabetic chars all uppercase → `shout`; `"Hello 👋"` → 3
+alphabetic chars, 1 uppercase → `speech`.
+
 **Rationale**: Distinguishes genuine emphasis (ALL CAPS) from normal case without ambiguity, so
 the rule is deterministic and testable. Threshold chosen so mixed-case messages stay speech.
 

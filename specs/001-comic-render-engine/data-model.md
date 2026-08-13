@@ -116,12 +116,32 @@ regenerated frontend client (principle V). See [contracts/api.md](contracts/api.
 
 ---
 
+## Demo Dialogues (FR-011)
+
+Three ready-made demo dialogues, in fixed order. Each has a stable `id`, display `name`, and the
+message bodies (`speaker_id`, `text`) plus the balloon/emotion vocabulary it is designed to
+exercise (SC-003: the "expected panels, expressions, and balloons" are these). Speakers reference
+the fixed v1 character cast defined in `characters.py`.
+
+| Order | `id` | `name` | Balloon / emotion coverage | Message bodies (speaker, text) |
+|-------|------|--------|----------------------------|--------------------------------|
+| 1 | `surprise` | A Surprising Find | surprise, speech | ada: "wow, whoa, look at that!" · bob: "oh my, what a find!" |
+| 2 | `disagreement` | The Great Argument | shout + anger | ada: "I HATE THIS SO MUCH" · bob: "NO. JUST NO." |
+| 3 | `quiet-tension` | A Quiet Tension | speech + thought, sadness/neutral | ada: "sorry, i miss this place" · bob: "[thought] stay quiet... keep it calm" |
+
+**Notes**:
+- The `quiet-tension` demo's `[thought]`-marked message is **added in T024 (US3)**; before US3
+  lands it uses a plain speech line so no demo references un-implemented thought behavior.
+- `expression` values are derived (not stored) by the analyzer; the table above states the
+  *intended* coverage for SC-003 verification only.
+
 ## Validation Matrix
 
 | Input | Expected |
 |-------|----------|
 | Conversation with 1–4 messages | Single panel. |
 | 5–8 messages | Two panels split at a turn boundary. |
+| Single speaker repeating several turns | Single (or split) panel; the same speaker keeps the same side throughout (FR-005, CHK020). |
 | Empty messages list | 422 with clear message. |
 | Message with empty/whitespace text | 422. |
 | Unknown speaker_id | 422. |
