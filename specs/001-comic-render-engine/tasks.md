@@ -60,7 +60,7 @@ description: "Task list for Comic Render Engine feature implementation"
 
 - [X] T007 [P] [US1] Unit test shouting + speech balloon + placement in `backend/tests/unit/test_analyzer.py` (pure functions): ≥50% uppercase & ≥3 alphabetic → `shout`, else `speech`
 - [X] T008 [P] [US1] Unit test panel layout in `backend/tests/unit/test_layout.py`: max 4 messages per panel; split by scanning right-to-left from message 4 for the latest speaker-change position ≤4 (split there if found, else cap at 4); left/right placement by turn parity + speaker identity with stable side across panels
-- [ ] T009 [P] [US1] API test for the render and demos endpoints in `backend/tests/api/routes/test_comic.py`: `POST /comic/render` happy path returns typed instruction, `GET /comic/demos` returns three demo dialogues, plus `422` cases (empty messages, empty/whitespace text, unknown speaker_id, overlong text); include a determinism assertion — render the same request twice and assert the two `ComicResponse` bodies are byte-identical (validates SC-002 and the deterministic message `id`)
+- [X] T009 [P] [US1] API test for the render and demos endpoints in `backend/tests/api/routes/test_comic.py`: `POST /comic/render` happy path returns typed instruction, `GET /comic/demos` returns three demo dialogues, plus `422` cases (empty messages, empty/whitespace text, unknown speaker_id, overlong text); include a determinism assertion — render the same request twice and assert the two `ComicResponse` bodies are byte-identical (validates SC-002 and the deterministic message `id`)
 
 ### Implementation for User Story 1
 

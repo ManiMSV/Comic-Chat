@@ -1,4 +1,4 @@
-"""Unit tests for the composer skeleton (T006, constitution principles II/IV)."""
+"""Unit tests for the composer orchestration (T006/T013, constitution principles II/IV)."""
 
 import inspect
 import re
@@ -32,6 +32,19 @@ def test_composer_module_has_no_db_or_http_imports() -> None:
     assert not DB_OR_HTTP_IMPORT_RE.search(source)
 
 
-def test_compose_raises_until_orchestration_lands() -> None:
-    with pytest.raises(NotImplementedError, match="T013"):
-        composer.compose([ComicMessage(speaker_id="ada", text="hello")])
+def test_compose_returns_typed_instruction_for_valid_conversation() -> None:
+    instruction = composer.compose(
+        [
+            ComicMessage(speaker_id="ada", text="wow, whoa, look at that!"),
+            ComicMessage(speaker_id="bob", text="oh my, what a find!"),
+        ]
+    )
+    assert isinstance(instruction, ComicInstruction)
+    assert len(instruction.panels) >= 1
+    assert len(instruction.characters) == 3
+    assert all(panel.messages for panel in instruction.panels)
+
+
+def test_compose_raises_value_error_on_unknown_speaker() -> None:
+    with pytest.raises(ValueError, match="unknown speaker_id"):
+        composer.compose([ComicMessage(speaker_id="nope", text="hello")])
