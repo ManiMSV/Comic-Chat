@@ -8,6 +8,7 @@ This file is the operating contract for agents in this repository. Follow the ru
 - **Build features with the speckit SDD cycle only.** Run `/speckit.specify` -> `/speckit.plan` -> `/speckit.tasks` -> `/speckit.implement`. Command definitions live in `.opencode/commands/speckit.*.md`; workflow orchestration in `.specify/workflows/speckit/workflow.yml`.
 - **Hard stop after `specify` and `plan`.** Present the generated artifacts and wait for user approval before proceeding. Never auto-advance past a review gate. Review gates are the safety net; bypassing them produces unreviewed work.
 - **One feature per branch.** Name branches `NNN-feature-name` using sequential numbering. Feature artifacts live under `specs/NNN-feature-name/` (`spec.md`, `plan.md`, `research.md`, `tasks.md`). Never mix multiple features in one branch or PR. This isolates review and makes rollback trivial.
+- **One issue per branch.** For issue-driven work, create a separate branch named after the issue, using the issue number (e.g. `007-delete-items-crud-demo` for issue #7). Branch from `master`. Never work for an issue on `master` or another feature branch.
 - **Break every feature into small, simple tasks** in `tasks.md`. Keep each task a single, testable increment.
 - **Always track progress.** Keep the opencode todo list and `tasks.md` statuses current in real time. Anyone should be able to see exactly where the work stands.
 - **Follow the loop per task: commit, test, fix, repeat.** Complete a task -> run the relevant tests -> fix any bug immediately -> only then commit -> move to the next task. **Never commit red.** This keeps history green and stops bugs from piling up.
@@ -17,6 +18,7 @@ This file is the operating contract for agents in this repository. Follow the ru
 - **Use gitmoji-style conventional commit subjects**, matching this repository's history: `✨` feature, `🐛` fix, `📝` docs, `🔧` config, `♻️` refactor, `👷` CI, `✅` tests, `🔖` release.
 - **One commit per task.** A commit is self-contained and must pass the tests for its scope. This keeps git history mapping one-to-one to the plan.
 - **One feature per PR.** A PR must pass CI (tests + lint) and be reviewed before merge. Never merge a failing or unreviewed PR. This keeps main branch shippable.
+- **Raise a PR for every issue.** Base the PR on `master` and reference the issue in the PR body with a closing keyword (`Closes #N` or `Fixes #N`) so GitHub auto-closes the issue when the PR merges.
 
 ## Commands
 
