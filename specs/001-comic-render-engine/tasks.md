@@ -71,7 +71,7 @@ description: "Task list for Comic Render Engine feature implementation"
 - [X] T014 [US1] Implement `backend/app/api/routes/comic.py`: `POST /comic/render` (stateless, returns `ComicResponse`) and `GET /comic/demos` (returns `DemosResponse`), both behind the existing auth; register the router in `backend/app/api/main.py`
 - [X] T015 [US1] Regenerate the frontend OpenAPI client after the backend schema change via `bash ./scripts/generate-client.sh`; commit the regenerated `frontend/src/client/` (never hand-edit)
 - [X] T016 [P] [US1] Create frontend SVG render components in `frontend/src/components/Comic/`: `Character.tsx` (draws a character's silhouette + palette), `Balloon.tsx` (speech bubble shape + tail), `Panel.tsx`, and `ComicStrip.tsx` that renders a `ComicInstruction` to `<svg>` exactly as received (client must NOT re-derive decisions, principle III); render balloon text as real `<text>` elements and give each panel `<g>` an accessible name via `aria-label`/`<title>` (CHK030)
-- [ ] T017 [US1] Create the `frontend/src/routes/_layout/comic.tsx` route: a demo picker (fetches `GET /comic/demos`) plus a message editor that submits `POST /comic/render` and displays the resulting SVG comic (FR-008); implement the loading, empty (no render yet), and error/retry states from plan.md §Frontend UX & Accessibility (CHK022)
+- [X] T017 [US1] Create the `frontend/src/routes/_layout/comic.tsx` route: a demo picker (fetches `GET /comic/demos`) plus a message editor that submits `POST /comic/render` and displays the resulting SVG comic (FR-008); implement the loading, empty (no render yet), and error/retry states from plan.md §Frontend UX & Accessibility (CHK022)
 
 ### Checkpoint (MVP Validation)
 
