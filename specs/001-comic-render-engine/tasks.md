@@ -94,7 +94,7 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Extend `backend/app/services/analyzer.py`: add deterministic emotion detection using whole-word boundary matching against the exact word sets in research.md §1, and FR-010 precedence resolution so a message resolves to exactly one `Expression` (FR-003/FR-010; depends on T019)
+- [X] T021 [US2] Extend `backend/app/services/analyzer.py`: add deterministic emotion detection using whole-word boundary matching against the exact word sets in research.md §1, and FR-010 precedence resolution so a message resolves to exactly one `Expression` (FR-003/FR-010; depends on T019)
 - [X] T022 [US2] Wire `expression` through `backend/app/services/composer.py` and the `RenderedMessage` payload in `backend/app/api/routes/comic.py` so the response carries each message's resolved expression (depends on T021)
 
 **Checkpoint**: User Stories 1 AND 2 both work and remain independently testable.
