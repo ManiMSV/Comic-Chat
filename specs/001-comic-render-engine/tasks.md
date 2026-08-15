@@ -89,7 +89,7 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 
 ### Tests for User Story 2 ⚠️ (write first, verify they FAIL before implementation)
 
-- [ ] T019 [P] [US2] Extend `backend/tests/unit/test_analyzer.py` with emotion tests pinned to the exact word sets in research.md §1, matched by whole-word boundary (e.g. `yay` → `joy`, `yesterday` → `neutral`, `hate` → `anger`), `neutral` fallback when no signal, and FR-010 precedence resolution (anger > surprise > joy > sadness > neutral) for conflicting signals
+- [X] T019 [P] [US2] Extend `backend/tests/unit/test_analyzer.py` with emotion tests pinned to the exact word sets in research.md §1, matched by whole-word boundary (e.g. `yay` → `joy`, `yesterday` → `neutral`, `hate` → `anger`), `neutral` fallback when no signal, and FR-010 precedence resolution (anger > surprise > joy > sadness > neutral) for conflicting signals
 - [ ] T020 [P] [US2] Extend `backend/tests/api/routes/test_comic.py` to assert rendered `expression` values flow through `POST /comic/render` for the emotion-triggering messages
 
 ### Implementation for User Story 2
