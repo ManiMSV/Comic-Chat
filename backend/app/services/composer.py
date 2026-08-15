@@ -19,7 +19,6 @@ from app.schemas.comic import (
     CharacterPlacement,
     ComicInstruction,
     ComicMessage,
-    Expression,
     Panel,
     RenderedMessage,
 )
@@ -74,7 +73,7 @@ def compose(messages: list[ComicMessage]) -> ComicInstruction:
                     id=_message_id(message, message_index),
                     speaker_id=message.speaker_id,
                     text=message.text,
-                    expression=Expression.neutral,
+                    expression=analyzer.resolve_expression(message.text),
                     balloon=analyzer.balloon_shape(message.text),
                 )
             )
