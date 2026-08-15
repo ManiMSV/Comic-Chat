@@ -90,12 +90,12 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 ### Tests for User Story 2 ⚠️ (write first, verify they FAIL before implementation)
 
 - [X] T019 [P] [US2] Extend `backend/tests/unit/test_analyzer.py` with emotion tests pinned to the exact word sets in research.md §1, matched by whole-word boundary (e.g. `yay` → `joy`, `yesterday` → `neutral`, `hate` → `anger`), `neutral` fallback when no signal, and FR-010 precedence resolution (anger > surprise > joy > sadness > neutral) for conflicting signals
-- [ ] T020 [P] [US2] Extend `backend/tests/api/routes/test_comic.py` to assert rendered `expression` values flow through `POST /comic/render` for the emotion-triggering messages
+- [X] T020 [P] [US2] Extend `backend/tests/api/routes/test_comic.py` to assert rendered `expression` values flow through `POST /comic/render` for the emotion-triggering messages
 
 ### Implementation for User Story 2
 
 - [ ] T021 [US2] Extend `backend/app/services/analyzer.py`: add deterministic emotion detection using whole-word boundary matching against the exact word sets in research.md §1, and FR-010 precedence resolution so a message resolves to exactly one `Expression` (FR-003/FR-010; depends on T019)
-- [ ] T022 [US2] Wire `expression` through `backend/app/services/composer.py` and the `RenderedMessage` payload in `backend/app/api/routes/comic.py` so the response carries each message's resolved expression (depends on T021)
+- [X] T022 [US2] Wire `expression` through `backend/app/services/composer.py` and the `RenderedMessage` payload in `backend/app/api/routes/comic.py` so the response carries each message's resolved expression (depends on T021)
 
 **Checkpoint**: User Stories 1 AND 2 both work and remain independently testable.
 

@@ -62,6 +62,30 @@ def test_render_returns_typed_instruction(
             assert message["balloon"] in BALLOONS
 
 
+def test_render_expression_flows_through_api(
+    client: TestClient, normal_user_token_headers: dict[str, str]
+) -> None:
+    messages = [
+        {"speaker_id": "ada", "text": "yay, we found it!"},
+        {"speaker_id": "bob", "text": "I HATE THIS SO MUCH"},
+        {"speaker_id": "ada", "text": "wow, what a find!"},
+        {"speaker_id": "bob", "text": "sorry, I miss this place"},
+        {"speaker_id": "cara", "text": "hello there"},
+        {"speaker_id": "ada", "text": "hate yay"},
+    ]
+    expected = ["joy", "anger", "surprise", "sadness", "neutral", "anger"]
+    r = client.post(
+        RENDER_URL, headers=normal_user_token_headers, json={"messages": messages}
+    )
+    assert r.status_code == 200
+    rendered = [
+        message["expression"]
+        for panel in r.json()["comic"]["panels"]
+        for message in panel["messages"]
+    ]
+    assert rendered == expected
+
+
 def test_render_is_byte_identical_on_reread(
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
