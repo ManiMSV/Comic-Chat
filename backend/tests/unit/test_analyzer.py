@@ -1,15 +1,20 @@
-"""Unit tests for the analyzer's shouting detection and balloon shape (T007, FR-004).
+"""Unit tests for the analyzer's shouting detection, balloon shape, and emotions.
 
-Pins the research.md §2 rule: a message is ``shout`` when at least 50% of its
+Shouting/balloon (T007, FR-004): a message is ``shout`` when at least 50% of its
 alphabetic characters (``str.isalpha()``) are uppercase AND it contains at least 3
 alphabetic characters; otherwise ``speech``. A message with zero alphabetic
 characters is never a ``shout``.
+
+Emotion resolution (T019, FR-003/FR-010): ``resolve_expression`` pins the exact
+word sets in research.md §1, matched by whole-word boundary on lowercased text
+(``yay`` fires inside ``yesterday``); no signal falls back to ``neutral``;
+conflicting signals resolve by precedence anger > surprise > joy > sadness.
 """
 
 import pytest
 
-from app.schemas.comic import BalloonShape
-from app.services.analyzer import balloon_shape, is_shouting
+from app.schemas.comic import BalloonShape, Expression
+from app.services.analyzer import balloon_shape, is_shouting, resolve_expression
 
 
 @pytest.mark.parametrize(
@@ -85,3 +90,82 @@ def test_balloon_shape_speech_for_normal_text() -> None:
 
 def test_balloon_shape_speech_for_zero_alphabetic() -> None:
     assert balloon_shape("!!!") is BalloonShape.speech
+
+
+@pytest.mark.parametrize(
+    ("text", "expression"),
+    [
+        *[
+            (word, Expression.joy)
+            for word in ["yay", "happy", "love", "great", "awesome"]
+        ],
+        *[(word, Expression.anger) for word in ["hate", "angry", "mad", "no"]],
+        *[(word, Expression.surprise) for word in ["wow", "what", "oh", "whoa"]],
+        *[(word, Expression.sadness) for word in ["sad", "sorry", "miss"]],
+    ],
+)
+def test_resolve_expression_pins_research_word_sets(
+    text: str, expression: Expression
+) -> None:
+    assert resolve_expression(text) is expression
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "yesterday",
+        "hateful",
+        "hater",
+        "happily",
+        "madder",
+        "whatever",
+        "whoathere",
+        "saddest",
+        "missing",
+        "not",
+        "noise",
+    ],
+)
+def test_resolve_expression_matches_whole_words_only(text: str) -> None:
+    assert resolve_expression(text) is Expression.neutral
+
+
+def test_resolve_expression_is_case_insensitive() -> None:
+    assert resolve_expression("YAY!") is Expression.joy
+    assert resolve_expression("I HATE THIS") is Expression.anger
+    assert resolve_expression("WOW!!") is Expression.surprise
+
+
+def test_resolve_expression_ignores_punctuation_boundaries() -> None:
+    assert resolve_expression("yay!") is Expression.joy
+    assert resolve_expression("no.") is Expression.anger
+    assert resolve_expression("wow,") is Expression.surprise
+    assert resolve_expression("(miss)") is Expression.sadness
+
+
+def test_resolve_expression_is_independent_of_shouting() -> None:
+    assert resolve_expression("I HATE THIS") is Expression.anger
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["hello there", "just chatting", "the cat sat down", "", "!!! ??? 123"],
+)
+def test_resolve_expression_neutral_fallback(text: str) -> None:
+    assert resolve_expression(text) is Expression.neutral
+
+
+@pytest.mark.parametrize(
+    ("text", "expression"),
+    [
+        ("hate yay", Expression.anger),
+        ("no wow", Expression.anger),
+        ("hate sad", Expression.anger),
+        ("wow yay", Expression.surprise),
+        ("wow sad", Expression.surprise),
+        ("happy sad", Expression.joy),
+        ("hate angry wow yay sad", Expression.anger),
+    ],
+)
+def test_resolve_expression_fr010_precedence(text: str, expression: Expression) -> None:
+    assert resolve_expression(text) is expression
