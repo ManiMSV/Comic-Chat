@@ -75,7 +75,7 @@ description: "Task list for Comic Render Engine feature implementation"
 
 ### Checkpoint (MVP Validation)
 
-- [ ] T018 [US1] E2E test in `frontend/tests/comic.spec.ts`: user opens the Comic page, picks a demo dialogue, and sees an SVG comic with ≥1 panel (requires Docker Compose stack per `quickstart.md`)
+- [X] T018 [US1] E2E test in `frontend/tests/comic.spec.ts`: user opens the Comic page, picks a demo dialogue, and sees an SVG comic with ≥1 panel (requires Docker Compose stack per `quickstart.md`)
 
 At this point, User Story 1 is fully functional and testable independently (MVP).
 

@@ -53,6 +53,8 @@ bunx playwright test  # E2E; requires the Docker Compose stack to be up
 
 Always rebuild the frontend after frontend changes, otherwise FastAPI serves stale assets.
 
+**Whenever UI/E2E testing is done**: verify with agent-browser (`npm i -g agent-browser && agent-browser install`), capture at least one screenshot of the exercised UI, and reference it in the commit message / PR with elaborated details (what was exercised, the exact actions taken, and the expected vs. observed result).
+
 ### Infrastructure
 
 ```bash
