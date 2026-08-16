@@ -5,8 +5,9 @@ import re
 
 import pytest
 
-from app.schemas.comic import ComicInstruction, ComicMessage
+from app.schemas.comic import ComicInstruction, ComicMessage, Expression
 from app.services import composer
+from app.services.analyzer import resolve_expression
 
 DB_OR_HTTP_IMPORT_RE = re.compile(
     r"^\s*(from app\.core\.(db|config)|"
@@ -48,3 +49,20 @@ def test_compose_returns_typed_instruction_for_valid_conversation() -> None:
 def test_compose_raises_value_error_on_unknown_speaker() -> None:
     with pytest.raises(ValueError, match="unknown speaker_id"):
         composer.compose([ComicMessage(speaker_id="nope", text="hello")])
+
+
+def test_compose_wires_resolved_expression_into_rendered_messages() -> None:
+    messages = [
+        ComicMessage(speaker_id="ada", text="yay, we found it!"),
+        ComicMessage(speaker_id="bob", text="I HATE THIS SO MUCH"),
+        ComicMessage(speaker_id="ada", text="hello there"),
+    ]
+    instruction = composer.compose(messages)
+    rendered = [message for panel in instruction.panels for message in panel.messages]
+    assert [message.expression for message in rendered] == [
+        Expression.joy,
+        Expression.anger,
+        Expression.neutral,
+    ]
+    for message, source in zip(rendered, messages, strict=True):
+        assert message.expression is resolve_expression(source.text)
