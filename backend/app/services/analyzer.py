@@ -1,11 +1,13 @@
-"""Pure message analysis for the Comic Render Engine (T007/T019, FR-003/FR-004).
+"""Pure message analysis for the Comic Render Engine (T007/T019/T023, FR-003/FR-004).
 
 Balloon-shape selection is a pure, deterministic function of the message text:
-a message is ``shout`` when at least 50% of its alphabetic characters are
-uppercase AND it contains at least 3 alphabetic characters; otherwise it is
-``speech`` (research.md §2). Emotion resolution uses whole-word boundary
-matching against the authoritative word sets in research.md §1 with FR-010
-precedence. Thought refinement lands in US3.
+a message is ``thought`` when its trimmed text starts with the ``[thought]``
+marker (case-insensitive); else ``shout`` when at least 50% of its alphabetic
+characters are uppercase AND it contains at least 3 alphabetic characters;
+otherwise ``speech`` (research.md §2/§3). Thought precedes shouting so a
+``[thought]`` ALL-CAPS message stays a thought balloon. Emotion resolution uses
+whole-word boundary matching against the authoritative word sets in research.md
+§1 with FR-010 precedence.
 
 No DB or HTTP imports: the expert engine stays pure (constitution principle II).
 """
@@ -57,9 +59,23 @@ def is_shouting(text: str) -> bool:
     return uppercase / len(alphabetic) >= 0.5
 
 
-def balloon_shape(text: str) -> BalloonShape:
-    """Derive the balloon shape for ``text`` (FR-004).
+def is_thought(text: str) -> bool:
+    """Return whether ``text`` starts with the ``[thought]`` marker (US3).
 
-    Returns ``shout`` when the shouting rule fires, else ``speech``.
+    Detection is on the trimmed text and case-insensitive (research.md §3).
     """
-    return BalloonShape.shout if is_shouting(text) else BalloonShape.speech
+    return text.strip().lower().startswith("[thought]")
+
+
+def balloon_shape(text: str) -> BalloonShape:
+    """Derive the balloon shape for ``text`` (FR-004, US3).
+
+    Precedence: ``thought`` when ``[thought]``-marked, else ``shout`` when the
+    shouting rule fires, else ``speech``. Thought precedes shouting so an
+    ALL-CAPS ``[thought]`` message stays a thought balloon (research.md §3).
+    """
+    if is_thought(text):
+        return BalloonShape.thought
+    if is_shouting(text):
+        return BalloonShape.shout
+    return BalloonShape.speech

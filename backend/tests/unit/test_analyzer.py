@@ -9,12 +9,22 @@ Emotion resolution (T019, FR-003/FR-010): ``resolve_expression`` pins the exact
 word sets in research.md §1, matched by whole-word boundary on lowercased text
 (``yay`` fires inside ``yesterday``); no signal falls back to ``neutral``;
 conflicting signals resolve by precedence anger > surprise > joy > sadness.
+
+Thought detection (T023, FR-004): ``is_thought`` recognizes a leading ``[thought]``
+marker on the trimmed text, case-insensitively. In ``balloon_shape``, thought
+precedes shouting so a ``[thought]`` ALL-CAPS message stays ``thought`` (US3,
+research.md §3).
 """
 
 import pytest
 
 from app.schemas.comic import BalloonShape, Expression
-from app.services.analyzer import balloon_shape, is_shouting, resolve_expression
+from app.services.analyzer import (
+    balloon_shape,
+    is_shouting,
+    is_thought,
+    resolve_expression,
+)
 
 
 @pytest.mark.parametrize(
@@ -90,6 +100,57 @@ def test_balloon_shape_speech_for_normal_text() -> None:
 
 def test_balloon_shape_speech_for_zero_alphabetic() -> None:
     assert balloon_shape("!!!") is BalloonShape.speech
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "[thought] I wonder if anyone noticed",
+        "  [thought] stay quiet... keep it calm  ",
+        "[THOUGHT] what if this backfires",
+        "[Thought] maybe she already left",
+        "[tHoUgHt] hmm",
+    ],
+)
+def test_is_thought_recognizes_leading_marker(text: str) -> None:
+    assert is_thought(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "I thought this would be fine",
+        "thought for the day",
+        "stay quiet... keep it calm",
+        "[thoughts] bubbling up",
+        "",
+    ],
+)
+def test_is_thought_rejects_non_marker_text(text: str) -> None:
+    assert not is_thought(text)
+
+
+def test_balloon_shape_thought_for_marked_message() -> None:
+    assert balloon_shape("[thought] I wonder if anyone noticed") is BalloonShape.thought
+
+
+def test_balloon_shape_thought_marker_is_case_insensitive() -> None:
+    assert balloon_shape("[THOUGHT] what if this backfires") is BalloonShape.thought
+
+
+def test_balloon_shape_thought_marker_after_trim() -> None:
+    assert (
+        balloon_shape("  [thought] stay quiet... keep it calm  ")
+        is BalloonShape.thought
+    )
+
+
+def test_balloon_shape_thought_overrides_shout() -> None:
+    assert balloon_shape("[thought] EVERYTHING IS FINE") is BalloonShape.thought
+
+
+def test_balloon_shape_speech_for_normal_message() -> None:
+    assert balloon_shape("stay quiet... keep it calm") is BalloonShape.speech
 
 
 @pytest.mark.parametrize(

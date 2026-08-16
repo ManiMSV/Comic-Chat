@@ -109,7 +109,7 @@ At this point, User Story 1 is fully functional and testable independently (MVP)
 
 ### Tests for User Story 3 ⚠️ (write first, verify they FAIL before implementation)
 
-- [ ] T023 [P] [US3] Extend `backend/tests/unit/test_analyzer.py` with thought detection: leading `[thought]` marker (after trim, case-insensitive) → `thought`; a `[thought]` ALL-CAPS message stays `thought` (thought overrides shout); normal message → `speech`
+- [X] T023 [P] [US3] Extend `backend/tests/unit/test_analyzer.py` with thought detection: leading `[thought]` marker (after trim, case-insensitive) → `thought`; a `[thought]` ALL-CAPS message stays `thought` (thought overrides shout); normal message → `speech`
 
 ### Implementation for User Story 3
 
